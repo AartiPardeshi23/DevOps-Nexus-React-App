@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Employee CRUD</title>
+</head>
+<body>
+  <h2>Employee Management</h2>
+
+  <input id="name" placeholder="Name">
+  <input id="role" placeholder="Role">
+  <button onclick="addEmployee()">Add</button>
+
+  <ul id="list"></ul>
+
+<script>
+async function loadEmployees() {
+  const res = await fetch("/employees");
+  const data = await res.json();
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+  data.forEach(e => {
+    list.innerHTML += `<li>${e.name} - ${e.role}
+      <button onclick="deleteEmployee(${e.id})">Delete</button>
+    </li>`;
+  });
+}
+
+async function addEmployee() {
+  const name = document.getElementById("name").value;
+  const role = document.getElementById("role").value;
+  await fetch("/employees", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, role })
+  });
+  loadEmployees();
+}
+
+async function deleteEmployee(id) {
+  await fetch(`/employees/${id}`, { method: "DELETE" });
+  loadEmployees();
+}
+
+loadEmployees();
+</script>
+</body>
+</html>
